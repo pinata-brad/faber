@@ -22,7 +22,7 @@ def copy_to_local(name):
     dir_path = os.path.dirname(os.path.realpath(faber.__file__))
     copy_path = dir_path + '/example_project'
     print(copy_path)
-    if os.path.exists(copy_path):
+    if os.path.exists(name):
         print('path exists.. overwrite?')
         overwriter = input('y or n')
         if overwriter != 'y':

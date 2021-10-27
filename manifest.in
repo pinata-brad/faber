@@ -1,1 +1,2 @@
-recursive-include example_project/*
+recursive-include faber/example_project/conf/
+
