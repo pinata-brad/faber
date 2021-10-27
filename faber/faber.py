@@ -26,7 +26,10 @@ class faber:
         self.data_io = dataIO(catalog)
 
         return
-
+    
+    def set_io(self, io_def):
+        self.data_io.set_io(io_def)
+        
     def set_state(self, state: dict):
         """
         """
@@ -87,14 +90,60 @@ class faber:
     def append_pipeline(self, node, pipe_name):
         self.pipelines[pipe_name].append(node)
 
-    def run_pipeline(self, pipe_name):
+    def run_pipeline(self, pipe_name, tags):
         """
         """
         for node in self.pipelines[pipe_name]:
-            self.evaluate_node(node)
+            if self.check_tags(node, tags):
+                self.evaluate_node(node)
+            else:
+                pass
+    
+    def run(self, tags):
+        for pl in self.pipelines:
+            self.run_pipeline(pl, tags)
+    
+    @staticmethod
+    def check_tags(node,tags):
+        """
+        def test():
+        #     case1: no tags and no nodes
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':None}
+        tags=None
+        assert check_tags(node,tags) == True
 
-    def set_io(self, io_def):
-        self.data_io.set_io(io_def)
+        #     case2: no tags and node tags
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag1']}
+        tags=None
+        assert check_tags(node,tags) == True
+
+        #     case3: tags and no node 
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':None}
+        tags=['tag1']
+        assert check_tags(node,tags) == False
+
+        #     case4: tags and matching node tag 
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag1','tag2']}
+        tags=['tag1']
+        assert check_tags(node,tags) == True
+
+        #     case5: tags and non-matching node tag 
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag3','tag2']}
+        tags=['tag1']
+        assert check_tags(node,tags) == False
+        """
+    
+        if tags:
+            try:
+                set(node['tags'])
+                if set(tags) & set(node['tags']):
+                    return True
+                else:
+                    return False
+            except:
+                return False
+        else:
+            return True
 
 
 
