@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="faber", # Replace with your own username
-    version="0.0.1",
+    name="faber", 
+    version="0.0.3",
     author="Bradley Nobbs",
     author_email="bradleynobbs@gmail.com",
     description="Quick start ml experimentation pipelines",

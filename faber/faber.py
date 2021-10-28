@@ -5,6 +5,7 @@ import yaml
 import logging 
 logger = logging.getLogger('faber')
 import re
+from typing import Nonetype
 
 def node(func, inputs, outputs, name=None, tags=None):
     """
@@ -90,7 +91,7 @@ class faber:
     def append_pipeline(self, node, pipe_name):
         self.pipelines[pipe_name].append(node)
 
-    def run_pipeline(self, pipe_name, tags):
+    def run_pipeline(self, pipe_name, tags: Union[list, None] = None):
         """
         """
         for node in self.pipelines[pipe_name]:
@@ -99,7 +100,7 @@ class faber:
             else:
                 pass
     
-    def run(self, tags):
+    def run(self, tags: Union[list, NoneType]=None):
         for pl in self.pipelines:
             self.run_pipeline(pl, tags)
     
@@ -132,8 +133,8 @@ class faber:
         tags=['tag1']
         assert check_tags(node,tags) == False
         """
-    
-        if tags:
+        
+        if isinstance(tags,list):
             try:
                 set(node['tags'])
                 if set(tags) & set(node['tags']):
