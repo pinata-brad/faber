@@ -5,7 +5,7 @@ import yaml
 import logging 
 logger = logging.getLogger('faber')
 import re
-from typing import Nonetype
+from typing import Union
 
 def node(func, inputs, outputs, name=None, tags=None):
     """
@@ -100,7 +100,7 @@ class faber:
             else:
                 pass
     
-    def run(self, tags: Union[list, NoneType]=None):
+    def run(self, tags: Union[list, None]=None):
         for pl in self.pipelines:
             self.run_pipeline(pl, tags)
     
