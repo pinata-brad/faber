@@ -41,7 +41,10 @@ def build_catalog(state={}, path=f'{os.getcwd()}/conf'):
     """
     read in yaml files into state and catalog
     """
-    state.update({'user': os.environ['USER']})
+    try:
+        state.update({'user': os.environ['USER']})
+    except:
+        pass
     catalog={}
     fnames=[]
     for root, _, fname in os.walk(path):
