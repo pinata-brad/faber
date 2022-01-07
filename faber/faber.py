@@ -3,7 +3,7 @@ from faber.utils import *
 import os
 import yaml
 import logging 
-logger = logging.getLogger('faber')
+logger = logging.getLogger(__name__)
 import re
 from typing import Union
 
