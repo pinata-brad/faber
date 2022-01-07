@@ -4,6 +4,7 @@ import os
 import yaml
 import logging 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 import re
 from typing import Union
 
