@@ -1,3 +1,5 @@
+[![Pylint](https://github.com/pinata-brad/faber/actions/workflows/pylint.yml/badge.svg?branch=main&event=push)](https://github.com/pinata-brad/faber/actions/workflows/pylint.yml)
+
 # faber
 
 ### what is faber? 
