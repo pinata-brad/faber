@@ -3,16 +3,17 @@ import yaml
 import logging
 import re 
 import os
+
 logger = logging.getLogger(__name__)
 
 def show_node(node):
-    s=f"""
+    node_display=f"""
     ** NAME:   {node['function'].__name__}
     ** INPUT:  {node['inputs']}
     ** OUTPUT: {node['outputs']}
     ** TAGS:   {node['tags']}
     """
-    return s
+    return node_display
 
 def trace_dependencies(pipeline,initial_state):
     dt={

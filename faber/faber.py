@@ -1,18 +1,21 @@
+"""
+core logic for faber
+"""
+import logging
+from typing import Union
 from faber.dataio import dataIO
-from faber.utils import *
-import os
-import yaml
-import logging 
+from faber.utils import show_node
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-import re
-from typing import Union
+
 
 def node(func, inputs, outputs, name=None, tags=None):
     """
+    defines the node from a function adn list of inputs
     """
-    assert type(outputs) == list
-    assert type(inputs) == list
+    assert isinstance(outputs, list)
+    assert isinstance(inputs, list)
     return {
             'function':func,
             'inputs':inputs,
@@ -21,33 +24,46 @@ def node(func, inputs, outputs, name=None, tags=None):
             'tags':tags
             }
 
-class faber:
+class Faber:
+    """
+    faber class
+    """
     def __init__(self, catalog):
+        """
+        initialise the class
+        """
         self.state={}
         self.pipelines={}
         self.data_io = dataIO(catalog)
 
-        return
-    
     def set_io(self, io_def):
+        """
+        define connectors to use when loading data
+        """
         self.data_io.set_io(io_def)
-        
+
     def set_state(self, state: dict):
         """
+        set the state loaded by build_catalog into the faber class
         """
         self.state = state.copy()
 
     def update_state(self, update: dict):
-
+        """
+        updates the project with latest loaded data from function execution
+        """
         return self.state.update(update)
 
     def check_state(self, node):
-
+        """
+        checks whether the inputs are defined or loads them from the catalog
+        """
         if self.state:
             check_state = [i for i in node['inputs'] if i not in list(self.state)]
-            logger.warning(f'inputs not in state: {check_state}')
             if check_state:
                 self.update_state(self.data_io.read(node['inputs']))
+            else:
+                logger.warning('inputs not in state: %s', check_state)
             check_state = [i for i in node['inputs'] if i not in list(self.state)]
             assert not check_state, f'inputs not in state: {check_state}'
         else:
@@ -55,7 +71,11 @@ class faber:
             check_state = [i for i in node['inputs'] if i not in list(self.state)]
             assert not check_state, f'inputs not in state or catalog: {check_state}'
 
-    def check_node(self, node):
+    @staticmethod
+    def check_node(node):
+        """
+        checks the node contains all the relelvent info
+        """
         expected = ['function', 'inputs', 'outputs', 'name', 'tags']
         have = list(node)
         assert set(expected+have) == set(expected)
@@ -63,17 +83,17 @@ class faber:
 
     def evaluate_node(self, node):
         """
-
+        executes the function contained within the node using the defined inputs and outputs
         :param self:
         :param node:
         :return:
         """
-        logger.info(f'''running node: \n{show_node(node)}''')
+        logger.info('''running node: \n %s''', show_node(node))
         self.check_node(node)
         self.check_state(node)
 
         out=node['function'](*[self.state[i] for i in node['inputs']])
-        if type(out) == tuple:
+        if isinstance(out, tuple):
             updater = {key: value for key, value in zip(node['outputs'], out)}
         else:
             updater = {node['outputs'][0]: out}
@@ -83,28 +103,41 @@ class faber:
         return 0
 
     def create_pipeline(self, nodes, pipe_name):
+        """
+        create hte pipeline in the faber class
+        """
         self.pipelines[pipe_name] = nodes
-        logger.info(f'Pipeline {pipe_name} created')
+        logger.info('Pipeline %s created', pipe_name)
 
     def extend_pipeline(self, nodes, pipe_name):
+        """
+        extend the pipeline by multiple node in the faber class
+        """
         self.pipelines[pipe_name].extend(nodes)
 
     def append_pipeline(self, node, pipe_name):
+        """
+        extend the pipeline by 1 node in the faber class
+        """
         self.pipelines[pipe_name].append(node)
 
     def run_pipeline(self, pipe_name, tags: Union[list, None] = None):
         """
+        execute the given pipeline
         """
         for node in self.pipelines[pipe_name]:
             if self.check_tags(node, tags):
                 self.evaluate_node(node)
             else:
                 pass
-    
+
     def run(self, tags: Union[list, None]=None):
-        for pl in self.pipelines:
-            self.run_pipeline(pl, tags)
-    
+        """
+        run all pipelines loaded
+        """
+        for pipe_line in self.pipelines:
+            self.run_pipeline(pipe_line, tags)
+
     @staticmethod
     def check_tags(node,tags):
         """
@@ -119,49 +152,33 @@ class faber:
         tags=None
         assert check_tags(node,tags) == True
 
-        #     case3: tags and no node 
+        #     case3: tags and no node
         node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':None}
         tags=['tag1']
         assert check_tags(node,tags) == False
 
-        #     case4: tags and matching node tag 
+        #     case4: tags and matching node tag
         node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag1','tag2']}
         tags=['tag1']
         assert check_tags(node,tags) == True
 
-        #     case5: tags and non-matching node tag 
+        #     case5: tags and non-matching node tag
         node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag3','tag2']}
         tags=['tag1']
         assert check_tags(node,tags) == False
+
+        #     case6: bad tags and  node tag
+        node = {'func':'f','inputs':['i1'],'outputs':['o2'], 'tags':['tag3','tag2']}
+        tags='tag1'
+        assert check_tags(node,tags) == False
         """
-        
         if isinstance(tags,list):
-            try:
+            if isinstance(node['tags'], list):
                 set(node['tags'])
-                if set(tags) & set(node['tags']):
-                    return True
-                else:
-                    return False
-            except:
+                return len(set(tags) & set(node['tags']))>0
+            else:
                 return False
+        elif isinstance(tags, str):
+            return False
         else:
             return True
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
