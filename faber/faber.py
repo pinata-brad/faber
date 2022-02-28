@@ -61,7 +61,7 @@ class Faber:
         if self.state:
             check_state = [i for i in node['inputs'] if i not in list(self.state)]
             if check_state:
-                self.update_state(self.data_io.read(node['inputs']))
+                self.update_state(self.data_io.read(check_state))
             else:
                 logger.warning('inputs not in state: %s', check_state)
             check_state = [i for i in node['inputs'] if i not in list(self.state)]
