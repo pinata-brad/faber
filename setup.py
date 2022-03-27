@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="faber", 
-    version="0.0.5",
+    name="faber-ml", 
+    version="0.0.6",
     author="Bradley Nobbs",
     author_email="bradleynobbs@gmail.com",
     description="Quick start ml experimentation pipelines",
