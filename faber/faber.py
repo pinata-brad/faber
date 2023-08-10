@@ -12,7 +12,8 @@ logging.basicConfig(level=logging.INFO)
 
 def node(func, inputs, outputs, name=None, tags=None):
     """
-    defines the node from a function adn list of inputs
+    defines the node from a function and list of inputs,
+    having ensured the inputs are both lists
     """
     assert isinstance(outputs, list)
     assert isinstance(inputs, list)
@@ -74,7 +75,13 @@ class Faber:
     @staticmethod
     def check_node(node):
         """
-        checks the node contains all the relelvent info
+        checks the node contains all the relelvent information.
+        The required components are:
+        - function
+        - inputs
+        - outputs
+        - name
+        - tags
         """
         expected = ['function', 'inputs', 'outputs', 'name', 'tags']
         have = list(node)
@@ -83,7 +90,8 @@ class Faber:
 
     def evaluate_node(self, node):
         """
-        executes the function contained within the node using the defined inputs and outputs
+        executes the function contained within the node using the defined inputs and outputs.
+        Includes logging for clarity.
         :param self:
         :param node:
         :return:
@@ -104,7 +112,7 @@ class Faber:
 
     def create_pipeline(self, nodes, pipe_name):
         """
-        create hte pipeline in the faber class
+        create the pipeline in the faber class
         """
         self.pipelines[pipe_name] = nodes
         logger.info('Pipeline %s created', pipe_name)
